@@ -2,10 +2,12 @@ INSERT INTO CATEGORIES (category_id, category_name) VALUES
 ('CAT01', 'Processor (CPU)'), ('CAT02', 'Motherboard'), ('CAT03', 'Desktop RAM'),
 ('CAT04', 'Graphics Card (GPU)'), ('CAT05', 'Casing'), ('CAT06', 'Power Supply (PSU)'),
 ('CAT07', 'NVMe SSD'), ('CAT08', 'SATA SSD'), ('CAT09', 'Hard Drive (HDD)'),
-('CAT10', 'CPU Cooler'), ('CAT11', 'Case Fan'), ('CAT12', 'Monitor'),
+('CAT10', 'CPU Cooler'), ('CAT11', 'Casing Cooler'), ('CAT12', 'Monitor'),
 ('CAT13', 'Keyboard'), ('CAT14', 'Mouse'), ('CAT15', 'Headphone'),
 ('CAT16', 'UPS'), ('CAT17', 'Webcam'), ('CAT18', 'Microphone'),
-('CAT19', 'Thermal Paste'), ('CAT20', 'Optical Drive');
+('CAT19', 'Thermal Paste'), ('CAT20', 'Optical Drive'),
+('CAT21', 'Speaker & Home Theater'), ('CAT22', 'Wifi Adapter / LAN Card'), 
+('CAT23', 'Anti Virus');
 
 INSERT INTO PRODUCTS (product_id, name, brand, price, stock_quantity, category_id) VALUES
 -- 20 CPUs
