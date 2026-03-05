@@ -1,3 +1,22 @@
+# 🖥️ Dynamic PC Builder Platform
+
+## 📖 About The Project
+This project is a smart, non-linear PC component selection platform built for our Database Management System (DBMS) course. Unlike traditional e-commerce sites, this platform acts as a **Constraint Satisfaction Engine**. It allows users to build a custom PC by selecting components in *any order* while automatically filtering out incompatible parts (e.g., mismatched CPU sockets, incompatible RAM types, or insufficient power supplies) using advanced SQL queries and relational database concepts.
+
+## ✨ Key Features
+* 🔄 **Omni-directional Compatibility Engine:** Start your build from any component (CPU, Motherboard, Case, etc.). The database dynamically filters subsequent choices based on strict hardware compatibility rules.
+* ⚡ **Dynamic Wattage Tracker:** Live calculation of total system power consumption (TDP) to recommend appropriate Power Supply Units (PSUs).
+* ⚠️ **Bottleneck Warning System (CEP):** Analyzes selected components and triggers a warning if there is a massive performance mismatch (e.g., pairing a low-end CPU with a high-end GPU).
+* 📈 **Automated Price History Logs:** Utilizes Database Triggers to automatically log and track the price history of components whenever an admin updates the pricing.
+* 💾 **Save & Share Builds:** Users can save their custom PC builds and generate shareable links.
+* 🛡️ **Role-Based Access Control:** Separate interfaces and database access levels for Customers and Admins.
+
+## 🗄️ Database Architecture
+To handle the unique attributes of different PC components efficiently, we utilized the **Class-Table Inheritance (Generalization/Specialization)** design pattern. 
+
+Instead of a single table with many `NULL` values, common attributes (Name, Price, Brand) are stored in the core `PRODUCTS` table. Specific attributes (like `socket_type` for CPUs or `wattage` for PSUs) are stored in specialized sub-tables. 
+
+### Entity-Relationship (ER) Diagram
 ```mermaid
 erDiagram
     USERS {
