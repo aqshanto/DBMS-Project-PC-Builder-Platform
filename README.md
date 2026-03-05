@@ -141,7 +141,7 @@ erDiagram
     PRODUCTS ||--o{ BUILD_ITEMS : "included_in"
     PRODUCTS ||--o{ PRICE_HISTORY_LOG : "tracked_in"
 
-
+```
 ## ⚙️ How to Setup the Database
 1. Open your MySQL client (Workbench/CLI).
 2. Run the scripts in the `database/` folder in the following order:
