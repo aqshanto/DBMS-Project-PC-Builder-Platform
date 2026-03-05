@@ -1,3 +1,5 @@
+-- DROP DATABASE pc_builder_db;
+
 CREATE DATABASE pc_builder_db;
 
 USE pc_builder_db;
