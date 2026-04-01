@@ -141,19 +141,3 @@ erDiagram
     COMPONENTS ||--o| STORAGES : "is_a"
 
 ```
-
-⚙️ Technologies Used
-Frontend: HTML5, Custom CSS3 (Glassmorphism & Cyberpunk UI), JavaScript (Vanilla)
-
-Backend: PHP 7.x/8.x (Session Management, Server-side routing)
-
-Database: MySQL / MariaDB (Complex Relational Joins, Constraints, Class-Table Inheritance)
-
-🛠️ How to Setup
-Open your MySQL client (XAMPP / phpMyAdmin).
-
-Create a new database named pc_builder.
-
-Import the provided .sql dump file to automatically generate the schema, relations, constraints, and populate the database with dummy hardware inventory and admin users.
-
-Update the config.php file with your local database credentials.
