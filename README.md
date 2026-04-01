@@ -1,21 +1,25 @@
-# 🖥️ Dynamic PC Builder Platform
+# 🖥️ NextGen PC Builder Platform (Full E-Commerce)
 
 ## 📖 About The Project
-This project is a smart, non-linear PC component selection platform built for our Database Management System (DBMS) course. Unlike traditional e-commerce sites, this platform acts as a **Constraint Satisfaction Engine**. It allows users to build a custom PC by selecting components in *any order* while automatically filtering out incompatible parts (e.g., mismatched CPU sockets, incompatible RAM types, or insufficient power supplies) using advanced SQL queries and relational database concepts.
+This project is an advanced, non-linear PC component selection and e-commerce platform built for our Database Management System (DBMS) course. Unlike traditional e-commerce sites, this platform acts as a **Constraint Satisfaction Engine**. It allows users to build a custom PC by selecting components in *any order* while automatically filtering out incompatible parts (e.g., mismatched CPU sockets, incompatible RAM types, or insufficient power supplies) using complex SQL JOINs and Subqueries.
+
+With the latest updates, it has evolved into a full-fledged **E-Commerce System** featuring secure checkouts, payment tracking, and a comprehensive Admin Panel for inventory and order management.
 
 ## ✨ Key Features
 * 🔄 **Omni-directional Compatibility Engine:** Start your build from any component (CPU, Motherboard, Case, etc.). The database dynamically filters subsequent choices based on strict hardware compatibility rules.
-* ⚡ **Dynamic Wattage & Price Calculation:** Live calculation of total system power consumption (TDP) and budget tracking through relational JOINs without storing redundant data.
-* ⚠️ **Bottleneck Warning System (CEP):** Analyzes selected components and triggers a warning if there is a massive performance mismatch (e.g., pairing a low-end CPU with a high-end GPU).
-* 💾 **Save & Manage Builds:** Users can save their custom PC builds, manage their build components securely, and organize them effectively.
-* 🖼️ **Visual Component Library:** Each component includes image references and detailed technical specifications for better user experience.
+* ⚡ **Dynamic Wattage & Bottleneck Calculator:** Live calculation of total system power consumption (TDP) to recommend appropriate Power Supply Units (PSUs).
+* 🛒 **Integrated E-Commerce & Checkout:** Users can purchase their custom builds or individual parts. Supports multiple payment gateways (bKash, Nagad, Card/Bank) with transaction ID tracking.
+* 🖨️ **Print & Share Builds:** Automatically generate and print professional PDF summaries of your custom PC builds.
+* 🛡️ **Role-Based Admin Panel (CRUD):** - Manage hardware inventory (Add, Update, Delete components).
+  - Track order statuses (Pending, Shipped, Delivered, Cancelled) and payment states.
+  - User management (Promote users to Admins, delete accounts).
 
 ## 🗄️ Database Architecture
-To handle the unique attributes of different PC components efficiently, we utilized the **Class-Table Inheritance (Generalization/Specialization)** design pattern. 
+To handle the unique attributes of different PC components efficiently without generating massive `NULL` values, we utilized the **Class-Table Inheritance (Generalization/Specialization)** design pattern. 
 
-Instead of a single table with many `NULL` values, common attributes (Name, Price, Brand, Image, Stock) are stored in the core `COMPONENTS` table. Specific attributes (like `Socket` for CPUs or `Wattage` for Power Supplies) are stored in specialized sub-tables. 
+Core attributes (Name, Price, Brand, Stock) are stored in the parent `COMPONENTS` table, while unique technical specs (like `Socket` or `Wattage`) are stored in specialized child tables.
 
-### Schema (ER) Diagram
+### 📊 Schema (ER) Diagram
 ```mermaid
 erDiagram
     USERS {
@@ -23,6 +27,7 @@ erDiagram
         string username
         string user_mail
         string password_hash
+        enum role "admin/user"
     }
 
     COMPONENTS {
@@ -36,61 +41,49 @@ erDiagram
     }
 
     CPUS {
-        int component_id PK "Also FK to COMPONENTS"
+        int component_id PK, FK
         string Socket
         int Cores
-        float Clock_Speed
         float tdp_watt
-        int passmark_score
     }
 
     MOTHERBOARDS {
-        int component_id PK "Also FK to COMPONENTS"
+        int component_id PK, FK
         string Socket
         string Form_Factor
-        int Max_Ram_Capacity
-        int Max_Ram_Slots
         string supported_ram_type
-        int m2_slots
     }
 
     RAMS {
-        int component_id PK "Also FK to COMPONENTS"
+        int component_id PK, FK
         int Capacity_GB
         string DDR_Version
         int Speed_MHz
     }
 
     GPUS {
-        int component_id PK "Also FK to COMPONENTS"
+        int component_id PK, FK
         int VRAM_GB
         int TDP_Watt
         int GPU_Length_mm
-        string Memory_Type
-        int perf_score
     }
 
     CASES {
-        int component_id PK "Also FK to COMPONENTS"
+        int component_id PK, FK
         string Form_Factor
-        string Color
         int Max_GPU_Length
     }
 
     POWERSUPPLIES {
-        int component_id PK "Also FK to COMPONENTS"
+        int component_id PK, FK
         int Wattage
         string Efficiency_Rating
-        string Modularity
     }
 
     STORAGES {
-        int component_id PK "Also FK to COMPONENTS"
+        int component_id PK, FK
         int Capacity_GB
         string Storage_Type
-        string Interface
-        int Read_Speed_MBps
-        int Write_Speed_MBps
     }
 
     BUILDS {
@@ -106,9 +99,38 @@ erDiagram
         string slot_type
     }
 
-    %% Core Relationships
+    ORDERS {
+        int order_id PK
+        int user_id FK
+        enum order_type "build/single"
+        enum status "pending/shipped/delivered"
+        enum payment_method "cod/bkash/nagad"
+        enum payment_status "unpaid/paid"
+        string txn_id
+        decimal total_price
+        string address
+    }
+
+    ORDER_ITEMS {
+        int item_id PK
+        int order_id FK
+        int component_id FK
+        string slot_type
+        decimal price
+    }
+
+    %% Relationships
     USERS ||--o{ BUILDS : "creates"
+    USERS ||--o{ ORDERS : "places"
     
+    %% E-commerce Relationships
+    ORDERS ||--|{ ORDER_ITEMS : "contains"
+    COMPONENTS ||--o{ ORDER_ITEMS : "sold_as"
+
+    %% Build Details
+    BUILDS ||--|{ BUILD_COMPONENTS : "contains"
+    COMPONENTS ||--o{ BUILD_COMPONENTS : "included_in"
+
     %% Inheritance Relationships (1 to 0 or 1)
     COMPONENTS ||--o| CPUS : "is_a"
     COMPONENTS ||--o| MOTHERBOARDS : "is_a"
@@ -117,13 +139,21 @@ erDiagram
     COMPONENTS ||--o| CASES : "is_a"
     COMPONENTS ||--o| POWERSUPPLIES : "is_a"
     COMPONENTS ||--o| STORAGES : "is_a"
-    
-    %% Build Details (Many to Many resolved)
-    BUILDS ||--|{ BUILD_COMPONENTS : "contains"
-    COMPONENTS ||--o{ BUILD_COMPONENTS : "included_in"
 
 ```
-## ⚙️ How to Setup the Database
-1. Open your MySQL client (Workbench/phpMyAdmin/CLI).
-2. Create a new database (e.g., pc_builder_db).
-3. Import the Backup3.0.sql file to automatically generate the schema, relations, and populate the database with real-world dummy hardware data.
+
+⚙️ Technologies Used
+Frontend: HTML5, Custom CSS3 (Glassmorphism & Cyberpunk UI), JavaScript (Vanilla)
+
+Backend: PHP 7.x/8.x (Session Management, Server-side routing)
+
+Database: MySQL / MariaDB (Complex Relational Joins, Constraints, Class-Table Inheritance)
+
+🛠️ How to Setup
+Open your MySQL client (XAMPP / phpMyAdmin).
+
+Create a new database named pc_builder.
+
+Import the provided .sql dump file to automatically generate the schema, relations, constraints, and populate the database with dummy hardware inventory and admin users.
+
+Update the config.php file with your local database credentials.
